@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using Palmmedia.ReportGenerator.Core;
+using Unity.VisualScripting;
 
 public class PopulationManager : MonoBehaviour
 {
@@ -22,9 +23,7 @@ public class PopulationManager : MonoBehaviour
             Vector3 pos = GetPos();
             GameObject go = Instantiate(personPrefab, pos, Quaternion.identity);
             DNA newDNA = go.GetComponent<DNA>();
-            newDNA.r = Random.Range(0, 1f);
-            newDNA.g = Random.Range(0, 1f);
-            newDNA.b = Random.Range(0, 1f);
+            RandomizeGenes(newDNA);
 
             population.Add(go);
         }
@@ -39,8 +38,17 @@ public class PopulationManager : MonoBehaviour
     }
     void Update()
     {
-        elapsed += Time.deltaTime; 
-        if (elapsed > trialTime)
+        elapsed += Time.deltaTime;
+        bool noPopulation = true;
+        foreach (GameObject go in population)
+        {
+            if (go.GetComponent<SpriteRenderer>().enabled)
+            {
+                noPopulation = false;
+                break;
+            }
+        }
+        if (elapsed > trialTime || noPopulation)
         {
             BreedNewPopulation(); 
             elapsed = 0;
@@ -71,21 +79,22 @@ public class PopulationManager : MonoBehaviour
     GameObject Breed(GameObject parent1, GameObject parent2)
     {
         Vector3 pos = GetPos();
-        GameObject offspring = Instantiate(personPrefab, pos, Quaternion.identity); 
+        GameObject offspring = Instantiate(personPrefab, pos, Quaternion.identity);
+        DNA offspringDNA = offspring.GetComponent<DNA>();
+
         DNA dna1 = parent1.GetComponent<DNA>(); 
         DNA dna2 = parent2.GetComponent<DNA>();
         //swap parent dna
         if(Random.Range(0,100) > 1)
         {
-            offspring.GetComponent<DNA>().r = Random.Range(0, 10) < 5 ? dna1.r : dna2.r; 
-            offspring.GetComponent<DNA>().g = Random.Range(0, 10) < 5 ? dna1.g : dna2.g; 
-            offspring.GetComponent<DNA>().b = Random.Range(0, 10) < 5 ? dna1.b : dna2.b; 
+            offspringDNA.r = Random.Range(0, 10) < 5 ? dna1.r : dna2.r;
+            offspringDNA.g = Random.Range(0, 10) < 5 ? dna1.g : dna2.g;
+            offspringDNA.b = Random.Range(0, 10) < 5 ? dna1.b : dna2.b;
+            offspringDNA.size = Random.Range(0, 10) < 5 ? dna1.size : dna2.size;
         }
         else
         {
-            offspring.GetComponent<DNA>().r = Random.Range(0, 1f);
-            offspring.GetComponent<DNA>().g = Random.Range(0, 1f);
-            offspring.GetComponent<DNA>().b = Random.Range(0, 1f);
+            RandomizeGenes(offspringDNA);
         }
 
         return offspring;
@@ -94,5 +103,13 @@ public class PopulationManager : MonoBehaviour
     Vector3 GetPos()
     {
         return new Vector3(Random.Range(-8, 8), Random.Range(-4f, 4f), 0);
+    }
+
+    private void RandomizeGenes(DNA dna)
+    {
+        dna.GetComponent<DNA>().r = Random.Range(0, 1f);
+        dna.GetComponent<DNA>().g = Random.Range(0, 1f);
+        dna.GetComponent<DNA>().b = Random.Range(0, 1f);
+        dna.GetComponent<DNA>().size = Random.Range(.1f, 2f);
     }
 }

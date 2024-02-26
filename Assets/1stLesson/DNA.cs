@@ -8,6 +8,7 @@ public class DNA : MonoBehaviour
     public float r;
     public float g;
     public float b;
+    public float size;
 
     public float timeToDie = 0f;
     SpriteRenderer sRender;
@@ -30,11 +31,6 @@ public class DNA : MonoBehaviour
         sRender = GetComponent<SpriteRenderer>();
         sCollider = GetComponent<Collider2D>();
         sRender.color = new Color(r, g, b);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        transform.localScale *= size;
     }
 }
