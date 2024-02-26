@@ -51,22 +51,21 @@ namespace MLS.Walk
 													this.transform.position.z + Random.Range(-2, 2));
 			GameObject offspring = Instantiate(botPrefab, startingPos, this.transform.rotation);
 			Brain b = offspring.GetComponent<Brain>();
-			if (Random.Range(0, 100) == 1) //mutate 1 in 100
-			{
-				b.Init();
-				b.dna.Mutate();
-			}
-			else
-			{
-				b.Init();
-				b.dna.Combine(parent1.GetComponent<Brain>().dna, parent2.GetComponent<Brain>().dna);
-			}
-			return offspring;
+
+			b.Init();
+			b.dna.Combine(parent1.GetComponent<Brain>().dna, parent2.GetComponent<Brain>().dna);
+
+            if (Random.Range(0, 100) == 1) //mutate 1 in 100
+            {
+                b.dna.Mutate();
+            }
+
+            return offspring;
 		}
 
 		void BreedNewPopulation()
 		{
-			List<GameObject> sortedList = population.OrderBy(o => o.GetComponent<Brain>().timeAlive).ToList();
+			List<GameObject> sortedList = population.OrderBy(o => o.GetComponent<Brain>().timeAlive).ThenBy(o => Vector3.Distance(o.transform.position, transform.position)).ToList();
 
 			population.Clear();
 			for (int i = (int)(sortedList.Count / 2.0f) - 1; i < sortedList.Count - 1; i++)
