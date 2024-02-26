@@ -4,7 +4,8 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace UnityStandardAssets.Utility {
+namespace UnityStandardAssets.Utility
+{
 #if UNITY_EDITOR
 
     [ExecuteInEditMode]
@@ -14,7 +15,8 @@ namespace UnityStandardAssets.Utility {
         , UnityEditor.Build.IActiveBuildTargetChanged
 #endif
     {
-        private enum BuildTargetGroup {
+        private enum BuildTargetGroup
+        {
             Standalone,
             Mobile
         }
@@ -34,8 +36,10 @@ namespace UnityStandardAssets.Utility {
 		CheckEnableContent();
 	}
 #else
-        public int callbackOrder {
-            get {
+        public int callbackOrder
+        {
+            get
+            {
                 return 1;
             }
         }
@@ -43,27 +47,32 @@ namespace UnityStandardAssets.Utility {
 
 #if UNITY_EDITOR
 
-        private void OnEnable() {
+        private void OnEnable()
+        {
             EditorApplication.update += Update;
         }
 
 
-        private void OnDisable() {
+        private void OnDisable()
+        {
             EditorApplication.update -= Update;
         }
 
-        public void OnActiveBuildTargetChanged(BuildTarget previousTarget, BuildTarget newTarget) {
+        public void OnActiveBuildTargetChanged(BuildTarget previousTarget, BuildTarget newTarget)
+        {
             CheckEnableContent();
         }
 
-        private void Update() {
+        private void Update()
+        {
             CheckEnableContent();
         }
 #endif
 
 
-        private void CheckEnableContent() {
-#if (UNITY_IPHONE || UNITY_ANDROID || UNITY_WP8 || UNITY_TIZEN || UNITY_STV)
+        private void CheckEnableContent()
+        {
+#if (UNITY_IPHONE || UNITY_ANDROID || UNITY_WP8 || UNITY_TIZEN || UNITY_STV )
 		if (m_BuildTargetGroup == BuildTargetGroup.Mobile)
 		{
 			EnableContent(true);
@@ -72,32 +81,42 @@ namespace UnityStandardAssets.Utility {
 		}
 #endif
 
-#if !(UNITY_IPHONE || UNITY_ANDROID || UNITY_WP8 || UNITY_TIZEN || UNITY_STV)
-            if (m_BuildTargetGroup == BuildTargetGroup.Mobile) {
+#if !(UNITY_IPHONE || UNITY_ANDROID || UNITY_WP8 || UNITY_TIZEN || UNITY_STV )
+            if (m_BuildTargetGroup == BuildTargetGroup.Mobile)
+            {
                 EnableContent(false);
             }
-            else {
+            else
+            {
                 EnableContent(true);
             }
 #endif
         }
 
 
-        private void EnableContent(bool enabled) {
-            if (m_Content.Length > 0) {
-                foreach (var g in m_Content) {
-                    if (g != null) {
+        private void EnableContent(bool enabled)
+        {
+            if (m_Content.Length > 0)
+            {
+                foreach (var g in m_Content)
+                {
+                    if (g != null)
+                    {
                         g.SetActive(enabled);
                     }
                 }
             }
-            if (m_ChildrenOfThisObject) {
-                foreach (Transform t in transform) {
+            if (m_ChildrenOfThisObject)
+            {
+                foreach (Transform t in transform)
+                {
                     t.gameObject.SetActive(enabled);
                 }
             }
-            if (m_MonoBehaviours.Length > 0) {
-                foreach (var monoBehaviour in m_MonoBehaviours) {
+            if (m_MonoBehaviours.Length > 0)
+            {
+                foreach (var monoBehaviour in m_MonoBehaviours)
+                {
                     monoBehaviour.enabled = enabled;
                 }
             }
