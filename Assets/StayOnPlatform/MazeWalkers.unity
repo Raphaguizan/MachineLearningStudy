@@ -463,8 +463,8 @@ Camera:
   m_GameObject: {fileID: 1337587449}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -694,9 +694,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00bb94c553844413d80b1829d6a35f5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  simulationSpeed: 0
+  simulationSpeed: 5
   botPrefab: {fileID: 1867656034960476, guid: ecda9423fad56bf449ba77a8e11ecf1c, type: 3}
-  populationSize: 50
+  populationSize: 100
   trialTime: 10
 --- !u!4 &1857003131
 Transform:

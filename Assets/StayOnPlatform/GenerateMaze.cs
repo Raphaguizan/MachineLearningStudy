@@ -39,6 +39,7 @@ public class GenerateMaze : MonoBehaviour {
 
     private void Generate()
 	{
+        elapsedTime = 0;
         for (int w = 0; w < width; w++)
         {
             for (int d = 0; d < depth; d++)

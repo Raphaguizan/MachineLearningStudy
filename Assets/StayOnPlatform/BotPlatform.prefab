@@ -233,6 +233,9 @@ MonoBehaviour:
   eyes: {fileID: 1099370551643688}
   eyesSpace: 0.1
   eyesDist: 1
+  myLayer:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!54 &54002680550140926
 Rigidbody:
   m_ObjectHideFlags: 0

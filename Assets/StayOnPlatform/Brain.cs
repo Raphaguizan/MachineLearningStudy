@@ -23,6 +23,9 @@ namespace MLS.Platform
         bool alive = true;
         Vector3 lastPos;
 
+        [SerializeField]
+        LayerMask myLayer;
+
         //public GameObject ethanPrefab;
         //GameObject ethan;
         Rigidbody rb;
@@ -47,11 +50,13 @@ namespace MLS.Platform
         public void Init()
         {
             //initialise DNA
-            //0 forward
-            //1 left
-            //2 right
+            //0 none seeing
+            //1 both seeing
+            //2 left seeing
+            //3 right seeing
+
             rb = GetComponent<Rigidbody>();
-            dna = new DNA(DNALength, 3);
+            dna = new DNA(DNALength, 360);
             timeAlive = 0;
             collideCount = 0;
             lastPos = transform.position;
@@ -69,7 +74,7 @@ namespace MLS.Platform
             // left eye
             //Debug.DrawRay(eyes.transform.position + (Vector3.left * eyesSpace), eyes.transform.forward * eyesDist, Color.red, 1);
             bool leftEyeSeen = false;
-            if (Physics.Raycast(eyes.transform.position + (Vector3.left * eyesSpace), eyes.transform.forward * eyesDist, out RaycastHit hitLeft))
+            if (Physics.Raycast(eyes.transform.position + (Vector3.left * eyesSpace), eyes.transform.forward * eyesDist, out RaycastHit hitLeft, eyesDist, ~myLayer))
             {
                 if (hitLeft.collider.gameObject.CompareTag("platform"))
                 {
@@ -80,7 +85,7 @@ namespace MLS.Platform
             // right eye
             //Debug.DrawRay(eyes.transform.position + (Vector3.right * eyesSpace), eyes.transform.forward * eyesDist, Color.red, 1);
             bool rightEyeSeen = false;
-            if (Physics.Raycast(eyes.transform.position + (Vector3.right * eyesSpace), eyes.transform.forward * eyesDist, out RaycastHit hitRight))
+            if (Physics.Raycast(eyes.transform.position + (Vector3.right * eyesSpace), eyes.transform.forward * eyesDist, out RaycastHit hitRight, eyesDist, ~myLayer))
             {
                 if (hitRight.collider.gameObject.CompareTag("platform"))
                 {
@@ -136,17 +141,11 @@ namespace MLS.Platform
 
         private (float value, bool move) GetMovementByDNA(int geneIndex)
         {
-            if (dna.GetGene(geneIndex) == 1)
+            if (dna.GetGene(geneIndex) == 0)
             {
-                return (-90f, false);
+                return (1f, true);
             }
-            if (dna.GetGene(geneIndex) == 2)
-            {
-                return (90f, false);
-            }
-            return (1f, true);
+            return (dna.GetGene(geneIndex), false);
         }
     }
-
-
 }

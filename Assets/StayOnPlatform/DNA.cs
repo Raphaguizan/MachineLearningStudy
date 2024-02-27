@@ -64,11 +64,22 @@ namespace MLS.Platform
 			string resp = "";
 			for (int i = 0; i < genes.Count; i++)
 			{
-				resp += $"Gene {i} ({genes[i]})\n";
+				resp += $"{GeneName(i)} ({genes[i]})\n";
 			}
 			return resp;
         }
 
+		private string GeneName(int index)
+		{
+            return index switch
+            {
+                0 => "none seeing",
+                1 => "both eyes seeing",
+                2 => "left eye seeing",
+                3 => "right eye seeing",
+                _ => "",
+            };
+        }
     }
 
 }
