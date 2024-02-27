@@ -143,7 +143,7 @@ namespace MLS.Platform
         {
             if (dna.GetGene(geneIndex) == 0)
             {
-                return (1f, true);
+                return (2f, true);
             }
             return (dna.GetGene(geneIndex), false);
         }

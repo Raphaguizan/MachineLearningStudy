@@ -23,11 +23,15 @@ namespace MLS.Platform
 		{
 			guiStyle.fontSize = 35;
 			guiStyle.normal.textColor = Color.white;
-			GUI.BeginGroup(new Rect(10, 10, 250, 150));
-			GUI.Box(new Rect(0, 0, 200, 140), "Stats", guiStyle);
+			GUI.BeginGroup(new Rect(10, 10, 400, 500));
+			GUI.Box(new Rect(0, 0, 400, 500), "Stats", guiStyle);
 			GUI.Label(new Rect(10, 30, 200, 30), "Gen: " + generation, guiStyle);
 			GUI.Label(new Rect(10, 60, 200, 30), string.Format("Time: {0:0.00}", elapsed), guiStyle);
 			GUI.Label(new Rect(10, 85, 200, 30), "Population: " + population.Count, guiStyle);
+			
+			if(fitnnessDNA != null)
+				GUI.Label(new Rect(40, 125, 300, 150), "Best DNA:\n\n" + fitnnessDNA.ToString(), guiStyle);
+			
 			GUI.EndGroup();
 		}
 
@@ -43,7 +47,7 @@ namespace MLS.Platform
 				b.GetComponent<Brain>().Init();
 				population.Add(b);
 
-				if(i == 1)
+				if(i < 5)
 				{
 					b.GetComponent<Brain>().dna.SetInt(0, 0);
 
@@ -100,7 +104,7 @@ namespace MLS.Platform
 			float resp = 0;
 			resp += ((b.distWalked + (Vector3.Distance(b.transform.position, transform.position)*2)) / 2) * 5;
 			resp += b.timeAlive; 
-			resp -= b.collideCount * 5;
+			resp -= b.collideCount * 3;
 			return resp;
         }
 
