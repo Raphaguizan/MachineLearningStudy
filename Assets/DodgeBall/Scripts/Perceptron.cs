@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -14,7 +15,8 @@ namespace MLS.DodgeBall
 
 	public class Perceptron : MonoBehaviour
 	{
-
+		[SerializeField]
+		private bool train = true;
 		public List<TrainingSet> ts = new();
 		double[] weights = { 0, 0 };
 		double bias = 0;
@@ -35,12 +37,16 @@ namespace MLS.DodgeBall
 			{ 
 				npc.GetComponent<Rigidbody>().isKinematic = true; 
 			}
+			
 			//learn from it for next time
-			TrainingSet s = new();
-			s.input = new double[2] { i1, i2 };
-			s.output = o; 
-			ts.Add(s);
-			Train();
+			if (train)
+			{
+                TrainingSet s = new();
+                s.input = new double[2] { i1, i2 };
+                s.output = o;
+                ts.Add(s);
+				Train();
+			}
 		}
 
 		double DotProductBias(double[] v1, double[] v2)
@@ -106,15 +112,47 @@ namespace MLS.DodgeBall
 			}
 		}
 
+        void LoadWeights()
+		{ 
+			string path = Application.dataPath + "/DodgeBall/weights.txt"; 
+			if (File.Exists (path) )
+			{
+				var sr = File.OpenText(path); 
+				string line = sr.ReadLine(); 
+				string[] w = line.Split(','); 
+				weights[0] = System.Convert.ToDouble(w[0]); 
+				weights[1] = System.Convert.ToDouble(w[1]); 
+				bias = System.Convert.ToDouble(w[2]); 
+				Debug.Log("loading");
+			}
+		}
 
-		void Start()
+		void SaveWeights()
+		{
+			string path = Application.dataPath + "/DodgeBall/weights.txt"; 
+			var sr = File.CreateText(path); 
+			sr.WriteLine(weights[0] + "," + weights[1] + "," + bias);
+			sr.Close();
+		}
+
+        void Start()
 		{
 			InitialiseWeights();
 		}
 
 		void Update()
 		{
+			if (Input.GetKeyDown("space"))
+			{
+				InitialiseWeights(); 
+				ts.Clear();
+			}
 
+			else if (Input.GetKeyDown("s")) 
+				SaveWeights(); 
+			else if (Input.GetKeyDown("l")) 
+				LoadWeights();
 		}
-	}
+
+    }
 }
