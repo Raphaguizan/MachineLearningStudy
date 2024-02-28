@@ -13,9 +13,13 @@ namespace MLS.Bird
 		public GameObject botPrefab;
 		public GameObject startingPos;
 		public int populationSize = 50;
+		public float trialTime = 5;
+
+		[SerializeField]
+		private bool activeSpawn = true;
+
 		List<GameObject> population = new List<GameObject>();
 		public static float elapsed = 0;
-		public float trialTime = 5;
 		int generation = 1;
 
         DNA fitnnessDNA = null;
@@ -39,11 +43,13 @@ namespace MLS.Bird
 
 
 		// Use this for initialization
-		void Start()
+		IEnumerator Start()
 		{
+			yield return new WaitUntil(()=> activeSpawn);
 			for (int i = 0; i < populationSize; i++)
 			{
 				GameObject b = Instantiate(botPrefab, startingPos.transform.position, this.transform.rotation, transform);
+				b.name += " " + i;
 				b.GetComponent<Brain>().Init();
 				population.Add(b);
 			}
@@ -52,23 +58,23 @@ namespace MLS.Bird
 		GameObject Breed(GameObject parent1, GameObject parent2)
 		{
 			GameObject offspring = Instantiate(botPrefab, startingPos.transform.position, this.transform.rotation, transform);
+			offspring.name += " " + int.Parse(parent1.name[^1].ToString()) + int.Parse(parent2.name[^1].ToString());
 			Brain b = offspring.GetComponent<Brain>();
-			if (Random.Range(0, 100) == 1) //mutate 1 in 100
-			{
-				b.Init();
-				b.dna.Mutate();
-			}
-			else
-			{
-				b.Init();
-				b.dna.Combine(parent1.GetComponent<Brain>().dna, parent2.GetComponent<Brain>().dna);
-			}
-			return offspring;
+			
+			b.Init();
+			b.dna.Combine(parent1.GetComponent<Brain>().dna, parent2.GetComponent<Brain>().dna);
+
+            if (Random.Range(0, 100) == 1) //mutate 1 in 100
+            {
+                b.dna.Mutate();
+            }
+
+            return offspring;
 		}
 
 		void BreedNewPopulation()
 		{
-			List<GameObject> sortedList = population.OrderBy(o => (o.GetComponent<Brain>().distanceTravelled)).ToList();
+			List<GameObject> sortedList = population.OrderBy(o => FitnessCalculus(o.GetComponent<Brain>())).ToList();
 
 			fitnnessDNA = sortedList[^1].GetComponent<Brain>().dna;
 
@@ -91,7 +97,10 @@ namespace MLS.Bird
 			}
 			generation++;
 		}
-
+		private float FitnessCalculus(Brain b)
+		{
+			return b.distanceTravelled - b.crash;
+		}
 		// Update is called once per frame
 		void Update()
 		{

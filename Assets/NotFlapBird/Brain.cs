@@ -7,18 +7,20 @@ namespace MLS.Bird
     public class Brain : MonoBehaviour
     {
         int DNALength = 5;
+        
         public DNA dna;
-        public GameObject eyes;
-        bool seeDownWall = false;
-        bool seeUpWall = false;
-        bool seeBottom = false;
-        bool seeTop = false;
-        Vector3 startPosition;
+        public BirdEyes eyes;
         public float timeAlive = 0;
         public float distanceTravelled = 0;
         public int crash = 0;
+        [SerializeField]
+        private bool showDebug = false;
+
+        Vector3 startPosition;
         bool alive = true;
         Rigidbody2D rb;
+
+        BirdVision currentVision => eyes.CurrentVision;
 
         public void Init()
         {
@@ -33,10 +35,16 @@ namespace MLS.Bird
             rb = this.GetComponent<Rigidbody2D>();
         }
 
-        void OnCollisionEnter2D(Collision2D col)
+        private void OnCollisionEnter2D(Collision2D collision)
         {
-            if (col.gameObject.tag == "dead" ||
-                col.gameObject.tag == "top" ||
+            if (collision.gameObject.tag == "dead")
+            {
+                alive = false;
+            }
+        }
+        void OnCollisionStay2D(Collision2D col)
+        {
+            if (col.gameObject.tag == "top" ||
                 col.gameObject.tag == "bottom" ||
                 col.gameObject.tag == "upwall" ||
                 col.gameObject.tag == "downwall")
@@ -49,44 +57,6 @@ namespace MLS.Bird
         void Update()
         {
             if (!alive) return;
-
-            seeUpWall = false;
-            seeDownWall = false;
-            seeTop = false;
-            seeBottom = false;
-            RaycastHit2D hit = Physics2D.Raycast(eyes.transform.position, eyes.transform.forward, 1.0f);
-
-            Debug.DrawRay(eyes.transform.position, eyes.transform.forward * 1.0f, Color.red);
-            Debug.DrawRay(eyes.transform.position, eyes.transform.up * 1.0f, Color.red);
-            Debug.DrawRay(eyes.transform.position, -eyes.transform.up * 1.0f, Color.red);
-
-            if (hit.collider != null)
-            {
-                if (hit.collider.gameObject.tag == "upwall")
-                {
-                    seeUpWall = true;
-                }
-                else if (hit.collider.gameObject.tag == "downwall")
-                {
-                    seeDownWall = true;
-                }
-            }
-            hit = Physics2D.Raycast(eyes.transform.position, eyes.transform.up, 1.0f);
-            if (hit.collider != null)
-            {
-                if (hit.collider.gameObject.tag == "top")
-                {
-                    seeTop = true;
-                }
-            }
-            hit = Physics2D.Raycast(eyes.transform.position, -eyes.transform.up, 1.0f);
-            if (hit.collider != null)
-            {
-                if (hit.collider.gameObject.tag == "bottom")
-                {
-                    seeBottom = true;
-                }
-            }
             timeAlive = PopulationManager.elapsed;
         }
 
@@ -99,26 +69,31 @@ namespace MLS.Bird
             float h = 0;
             float v = 1.0f; //dna.GetGene(0);
 
-            if (seeUpWall)
-            {
-                h = dna.GetGene(0);
-            }
-            else if (seeDownWall)
-            {
-                h = dna.GetGene(1);
-            }
-            else if (seeTop)
-            {
-                h = dna.GetGene(2);
-            }
-            else if (seeBottom)
-            {
-                h = dna.GetGene(3);
-            }
-            else
-            {
-                h = dna.GetGene(4);
-            }
+            if (showDebug)
+                Debug.Log(gameObject.name +" -> "+ currentVision);
+
+            h = dna.GetGene((int)currentVision);
+
+            //if (seeUpWall)
+            //{
+            //    h = dna.GetGene(0);
+            //}
+            //else if (seeDownWall)
+            //{
+            //    h = dna.GetGene(1);
+            //}
+            //else if (seeTop)
+            //{
+            //    h = dna.GetGene(2);
+            //}
+            //else if (seeBottom)
+            //{
+            //    h = dna.GetGene(3);
+            //}
+            //else
+            //{
+            //    h = dna.GetGene(4);
+            //}
 
             rb.AddForce(this.transform.right * v);
             rb.AddForce(this.transform.up * h * 0.1f);
