@@ -74,6 +74,9 @@ namespace MLS.Bird
 
 		void BreedNewPopulation()
 		{
+			if (!activeSpawn)
+				return;
+
 			List<GameObject> sortedList = population.OrderBy(o => FitnessCalculus(o.GetComponent<Brain>())).ToList();
 
 			fitnnessDNA = sortedList[^1].GetComponent<Brain>().dna;
@@ -99,7 +102,7 @@ namespace MLS.Bird
 		}
 		private float FitnessCalculus(Brain b)
 		{
-			return b.distanceTravelled - b.crash;
+			return b.timeAlive - b.crash;
 		}
 		// Update is called once per frame
 		void Update()

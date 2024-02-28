@@ -58,8 +58,8 @@ MonoBehaviour:
   - {fileID: 8875289325039498420}
   - {fileID: 8002546105265697613}
   - {fileID: 1451108802199251052}
-  visionDist: 1
-  showDebug: 0
+  visionDist: 2
+  showDebug: 1
 --- !u!1 &1629249223627068
 GameObject:
   m_ObjectHideFlags: 0
@@ -222,6 +222,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70db827ffbcba4f86b837a49e721b3bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dna:
+    genes: 
+    dnaLength: 0
+    maxValues: 0
   eyes: {fileID: 1201955302496865012}
   timeAlive: 0
   distanceTravelled: 0

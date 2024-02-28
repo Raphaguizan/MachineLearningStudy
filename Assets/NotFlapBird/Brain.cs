@@ -1,14 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using NaughtyAttributes;
+using UnityEditor;
 
 namespace MLS.Bird
 {
     public class Brain : MonoBehaviour
     {
         int DNALength = 5;
-        
+
         public DNA dna;
+
         public BirdEyes eyes;
         public float timeAlive = 0;
         public float distanceTravelled = 0;
@@ -22,6 +25,11 @@ namespace MLS.Bird
 
         BirdVision currentVision => eyes.CurrentVision;
 
+        private void Start()
+        {
+            rb = this.GetComponent<Rigidbody2D>();
+        }
+
         public void Init()
         {
             //initialise DNA
@@ -32,7 +40,6 @@ namespace MLS.Bird
             dna = new DNA(DNALength, 200);
             this.transform.Translate(Random.Range(-1.5f, 1.5f), Random.Range(-1.5f, 1.5f), 0);
             startPosition = this.transform.position;
-            rb = this.GetComponent<Rigidbody2D>();
         }
 
         private void OnCollisionEnter2D(Collision2D collision)
@@ -44,10 +51,11 @@ namespace MLS.Bird
         }
         void OnCollisionStay2D(Collision2D col)
         {
-            if (col.gameObject.tag == "top" ||
-                col.gameObject.tag == "bottom" ||
-                col.gameObject.tag == "upwall" ||
-                col.gameObject.tag == "downwall")
+            if (col.gameObject.tag == "top" || col.gameObject.tag == "bottom")
+            {
+                crash += 2;
+            }
+            if (col.gameObject.tag == "upwall" || col.gameObject.tag == "downwall")
             {
                 crash++;
             }
@@ -67,7 +75,7 @@ namespace MLS.Bird
 
             // read DNA
             float h = 0;
-            float v = 1.0f; //dna.GetGene(0);
+            
 
             if (showDebug)
                 Debug.Log(gameObject.name +" -> "+ currentVision);
@@ -95,9 +103,22 @@ namespace MLS.Bird
             //    h = dna.GetGene(4);
             //}
 
-            rb.AddForce(this.transform.right * v);
             rb.AddForce(this.transform.up * h * 0.1f);
+            StartXCorretion();
             distanceTravelled = Vector3.Distance(startPosition, this.transform.position);
+        }
+
+        private void StartXCorretion()
+        {
+            float v = 1.0f;
+            if(transform.position.x < startPosition.x - .2f)
+            {
+                rb.AddForce(this.transform.right * v * (startPosition.x - transform.position.x));
+            }
+            if (transform.position.x > startPosition.x + .2f)
+            {
+                rb.AddForce(-this.transform.right * v * (transform.position.x - startPosition.x));
+            }
         }
     }
 

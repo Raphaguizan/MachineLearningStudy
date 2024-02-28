@@ -1,14 +1,20 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using NaughtyAttributes;
+using Random = UnityEngine.Random;
 
 namespace MLS.Bird
 {
+	[Serializable]
 	public class DNA
 	{
-
+		[SerializeField, AllowNesting]
 		List<int> genes = new List<int>();
+		[SerializeField, AllowNesting]
 		int dnaLength = 0;
+		[SerializeField, AllowNesting]
 		int maxValues = 0;
 
 		public DNA(int l, int v)
