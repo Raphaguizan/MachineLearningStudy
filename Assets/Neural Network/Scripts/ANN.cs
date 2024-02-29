@@ -71,7 +71,12 @@ namespace MLS.NNw
                     }
 
                     N -= layers[i].neurons[j].bias;
-                    layers[i].neurons[j].output = ActivationFunction(N);
+
+                    if(i == numHidden)
+                        layers[i].neurons[j].output = ActivationFunctionO(N);
+                    else
+                        layers[i].neurons[j].output = ActivationFunction(N);
+
                     outputs.Add(layers[i].neurons[j].output);
                 }
             }
@@ -129,17 +134,58 @@ namespace MLS.NNw
         {
             return Sigmoid(value);
         }
+        double ActivationFunctionO(double value)
+        {
+            return Sigmoid(value);
+        }
 
         double Step(double value) //(aka binary step)
         {
-            if (value < 0) return 0;
-            else return 1;
+            if (value < 0) 
+                return 0;
+
+            return 1;
         }
 
         double Sigmoid(double value) //(aka logistic softstep)
         {
             double k = (double)System.Math.Exp(value);
             return k / (1.0f + k);
+        }
+
+        double TanH (double value)
+        {
+            return (2 * (Sigmoid(2*value)) - 1);
+        }
+        double ReLu(double value)
+        {
+            if (value < 0) 
+                return value;
+
+            return 0;
+        }
+
+        double LeakReLu(double value)
+        {
+            if (value < 0) 
+                return .01f * value;
+
+            return value;
+        }
+
+        double Sinusoid(double value)
+        {
+            return Mathf.Sin((float)value);
+        }
+
+        double ArcTan(double value)
+        {
+            return Mathf.Atan((float) value);
+        }
+
+        double SoftSign(double value)
+        {
+            return value/(1 + Mathf.Abs((float)value));
         }
     }
 }

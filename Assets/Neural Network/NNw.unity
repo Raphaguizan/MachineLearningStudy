@@ -338,12 +338,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93410c91d3be45c44a86efc9516f2975, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NumEpocs: 5000
+  NumEpocs: 200000
   ts:
   - input:
     - 1
     - 1
-    output: 1
+    output: 0
   - input:
     - 1
     - 0
@@ -355,7 +355,7 @@ MonoBehaviour:
   - input:
     - 0
     - 0
-    output: 1
+    output: 0
 --- !u!4 &1888006672
 Transform:
   m_ObjectHideFlags: 0
