@@ -23,7 +23,7 @@ namespace MLS.NNw
 
         private void Start()
         {
-            ann = new(2, 1, 1, 2, .8f);
+            ann = new(2, 1, 1, 2, .1f);
             List<double> results;
 
             for (int i = 0; i < NumEpocs; i++)
@@ -32,7 +32,7 @@ namespace MLS.NNw
                 for (int j = 0; j < ts.Length; j++)
                 {
                     results = Train(ts[j].input[0], ts[j].input[1], ts[j].output);
-                    sumSquareError += Mathf.Pow((float)results[0] - 0, 2);
+                    sumSquareError += Mathf.Pow((float)results[0] - (float)ts[j].output, 2);
                 }
             }
 
