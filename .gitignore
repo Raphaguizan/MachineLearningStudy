@@ -70,3 +70,11 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+Assets/RaceIA/SteamPunk_Kart/Textures/SpeedPunk2_Kart_AlbedoTransparency.tga
+Assets/RaceIA/SteamPunk_Kart/Textures/SpeedPunk2_Kart_AlbedoTransparency.tga.meta
+Assets/RaceIA/SteamPunk_Kart/Textures/SpeedPunk2_Kart_AmbientOcclusion.tga
+Assets/RaceIA/SteamPunk_Kart/Textures/SpeedPunk2_Kart_AmbientOcclusion.tga.meta
+Assets/RaceIA/SteamPunk_Kart/Textures/SpeedPunk2_Kart_MetallicSmoothness.tga
+Assets/RaceIA/SteamPunk_Kart/Textures/SpeedPunk2_Kart_MetallicSmoothness.tga.meta
+Assets/RaceIA/SteamPunk_Kart/Textures/SpeedPunk2_Kart_Normal.tga
+Assets/RaceIA/SteamPunk_Kart/Textures/SpeedPunk2_Kart_Normal.tga.meta
