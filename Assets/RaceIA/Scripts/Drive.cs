@@ -51,15 +51,16 @@ namespace MLS.Race
             transform.Translate(0, 0, translation); 
             transform.Rotate(0, rotation, 0);
 
-            RaycastEyes();
-            
+            string td = RaycastEyes();
+            if (!collectedTrainingData.Contains(td))
+                collectedTrainingData.Add(td);
         }
         float Round(float x)
         {
             return (float)System.Math.Round(x, System.MidpointRounding.AwayFromZero) / 2f;
         }
 
-        void RaycastEyes()
+        string RaycastEyes()
         {
             if (showDebug)
             {
@@ -100,10 +101,7 @@ namespace MLS.Race
                 l45Dist = 1 - Round(hit.distance / visibleDistance);
             }
 
-            string td = $"{fDist};{rDist};{lDist};{r45Dist};{l45Dist};{Round(translationInput)};{Round(rotationInput)}";
-
-            if(!collectedTrainingData.Contains(td))
-                collectedTrainingData.Add(td);
+            return $"{fDist};{rDist};{lDist};{r45Dist};{l45Dist};{Round(translationInput)};{Round(rotationInput)}";
         }
     }
 }
