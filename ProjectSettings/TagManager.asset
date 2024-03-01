@@ -8,6 +8,10 @@ TagManager:
   - platform
   - wall
   - Win
+  - tops
+  - ball
+  - backwall
+  - paddle
   layers:
   - Default
   - TransparentFX

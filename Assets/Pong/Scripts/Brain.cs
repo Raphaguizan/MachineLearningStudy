@@ -6,14 +6,10 @@ namespace MLS.Pong
 {
     public class Brain : MonoBehaviour
     {
-        public GameObject paddle;
+        public Paddle paddle;
         public GameObject ball;
+        public GameObject myBackWall;
         Rigidbody2D brb;
-
-        float yVel;
-        float paddleMinY = 8.8f;
-        float paddleMaxY = 17.4f;
-        float paddleMaxSpeed = 15f;
 
         public float numSaved = 0;
         public float numIssed = 0;
@@ -47,9 +43,6 @@ namespace MLS.Pong
 
         void Update()
         {
-            float posy = Mathf.Clamp(paddle.transform.position.y + (yVel * Time.deltaTime * paddleMaxSpeed), paddleMinY, paddleMaxY); 
-            paddle.transform.position = new(paddle.transform.position.x, posy, paddle.transform.position.z);
-            
             List<double> output = new(); 
             int layerMask = 1 << 9; 
             RaycastHit2D hit = Physics2D.Raycast(ball.transform.position, brb.velocity, 1000, layerMask);
@@ -61,15 +54,15 @@ namespace MLS.Pong
                     hit = Physics2D.Raycast(hit.point, reflection, 1000, layerMask);
                 }
 
-                if (hit.collider != null && hit.collider.gameObject.tag == "backwall")
+                if (hit.collider != null && hit.collider.gameObject.Equals(myBackWall))
                 {
                     float dy = (hit.point.y - paddle.transform.position.y);
                     output = Run(ball.transform.position.x, ball.transform.position.y, brb.velocity.x, brb.velocity.y, paddle.transform.position.x, paddle.transform.position.y, dy, true);
-                    yVel = (float)output[0];
+                    paddle.ChangeVel((float)output[0]);
                 }
             }
             else
-                yVel = 0;
+                paddle.ChangeVel(0);
         }
     }
 }
