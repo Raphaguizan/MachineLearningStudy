@@ -52,8 +52,12 @@ namespace MLS.Race
             transform.Rotate(0, rotation, 0);
 
             string td = RaycastEyes();
-            if (!collectedTrainingData.Contains(td))
-                collectedTrainingData.Add(td);
+
+            if (translationInput != 0 && rotationInput != 0)
+            {
+                if (!collectedTrainingData.Contains(td))
+                    collectedTrainingData.Add(td);
+            }
         }
         float Round(float x)
         {

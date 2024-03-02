@@ -171,12 +171,12 @@ public class ANN{
 
 	double ActivationFunction(double value)
 	{
-		return Sigmoid(value);
+		return TanH(value);
 	}
 
 	double ActivationFunctionO(double value)
 	{
-		return Sigmoid(value);
+		return TanH(value);
 	}
 
 	double TanH(double value)
