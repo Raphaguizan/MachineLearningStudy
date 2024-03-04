@@ -26,13 +26,18 @@ namespace MLS.Race
         public float rotation;
 
         public bool showDebug = true;
+        public bool loadFromFile = false;
 
 
         // Start is called before the first frame update
         void Start()
         {
-            ann = new(5,2,1,10,.5f);
-            StartCoroutine(LoadTrainingSet());
+            ann = new(5,2,2,10,.5f);
+
+            if (loadFromFile && LoadWeightsFromFile())
+                trainingDone = true;
+            else
+                StartCoroutine(LoadTrainingSet());
         }
 
         private void OnGUI()
@@ -42,7 +47,7 @@ namespace MLS.Race
             style.normal.textColor = Color.white;
             GUI.Label(new Rect(25, 25, 250, 30), "SSE: " + lastSSE, style);
             GUI.Label(new Rect(25, 80, 250, 30), "alpha: " + ann.alpha, style);
-            GUI.Label(new Rect(25, 135, 250, 30), "Trained: " + trainingProgress, style);
+            GUI.Label(new Rect(25, 135, 250, 30), "Trained: " + trainingProgress.ToString("00%"), style);
         }
 
 
@@ -75,30 +80,28 @@ namespace MLS.Race
                     string[] data = line.Split(';');
                     //if nothing to be learned ignore this line
                     float thisError = 0;
-                    if (double.Parse(data[5]) != 0 && double.Parse(data[6]) != 0)
-                    {
-                        inputs.Clear();
-                        outputs.Clear();
-                        inputs.Add(double.Parse(data[0]));
-                        inputs.Add(double.Parse(data[1]));
-                        inputs.Add(double.Parse(data[2]));
-                        inputs.Add(double.Parse(data[3]));
-                        inputs.Add(double.Parse(data[4]));
 
-                        double o1 = Map(0, 1, -1, 1, float.Parse(data[5]));
-                        outputs.Add(o1);
-                        double o2 = Map(0, 1, -1, 1, float.Parse(data[6]));
-                        outputs.Add(o2);
+                    inputs.Clear();
+                    outputs.Clear();
+                    inputs.Add(double.Parse(data[0]));
+                    inputs.Add(double.Parse(data[1]));
+                    inputs.Add(double.Parse(data[2]));
+                    inputs.Add(double.Parse(data[3]));
+                    inputs.Add(double.Parse(data[4]));
 
-                        calcOutputs = ann.Train(inputs, outputs);
-                        thisError = (Mathf.Pow((float)(outputs[0] - calcOutputs[0]), 2) * Mathf.Pow((float)(outputs[1] - calcOutputs[1]), 2)) / 2f;
-                    }
+                    double o1 = float.Parse(data[5]).Map(0, 1f, -1f, 1f);
+                    outputs.Add(o1);
+                    double o2 = float.Parse(data[6]).Map(0, 1f, -1f, 1f);
+                    outputs.Add(o2);
+
+                    calcOutputs = ann.Train(inputs, outputs);
+                    thisError = (Mathf.Pow((float)(outputs[0] - calcOutputs[0]), 2) * Mathf.Pow((float)(outputs[1] - calcOutputs[1]), 2)) / 2f;
                     sse += thisError;
                 }
                 trainingProgress = (float)i / (float)epochs;
                 sse /= lineCount;
 
-                //if sse isn't better the reload previous set of weights
+                //if sse isn't better then reload previous set of weights
                 //and decrease alpha
 
                 if (lastSSE < sse)
@@ -115,22 +118,8 @@ namespace MLS.Race
                 yield return null;
             }
             trainingDone = true;
+            SaveWeightsToFile();
         }
-
-        private double Map(int newFrom, int newTo, int oldFrom, int oldTo, float value)
-        {
-            if (value <= oldFrom)
-                return newFrom;
-            else if (value >= oldTo)
-                return newTo;
-            return (newTo - newFrom) * ((value - oldFrom) / (oldTo - oldFrom)) * newFrom;
-        }
-
-        float Round(float x)
-        {
-            return (float)System.Math.Round(x, System.MidpointRounding.AwayFromZero) / 2f;
-        }
-
 
         // Update is called once per frame
         void Update()
@@ -153,8 +142,8 @@ namespace MLS.Race
             outputs.Add(0);
 
             List<double> calcOutputs = ann.CalcOutput(inputs, outputs);
-            float translationInput = (float)Map(-1, 1, 0, 1, (float) calcOutputs[0]);
-            float rotationInput = (float)Map(-1, 1, 0, 1, (float) calcOutputs[1]);
+            float translationInput = ((float)calcOutputs[0]).Map(-1f, 1f, 0, 1f);
+            float rotationInput = ((float)calcOutputs[1]).Map(-1f, 1f, 0, 1f);
 
             translation = translationInput * speed * Time.deltaTime;
             rotation = rotationInput * rotationSpeed * Time.deltaTime;
@@ -181,30 +170,61 @@ namespace MLS.Race
             // forward
             if (Physics.Raycast(transform.position, transform.forward, out hit, visibleDistance))
             {
-                fDist = 1 - Round(hit.distance / visibleDistance);
+                fDist = 1 - (hit.distance / visibleDistance).Round();
             }
             // right
             if (Physics.Raycast(transform.position, transform.right, out hit, visibleDistance))
             {
-                rDist = 1 - Round(hit.distance / visibleDistance);
+                rDist = 1 - (hit.distance / visibleDistance).Round();
             }
             // left
             if (Physics.Raycast(transform.position, -transform.right, out hit, visibleDistance))
             {
-                lDist = 1 - Round(hit.distance / visibleDistance);
+                lDist = 1 - (hit.distance / visibleDistance).Round();
             }
             // right 45
             if (Physics.Raycast(transform.position, Quaternion.AngleAxis(-45, Vector3.up) * transform.right, out hit, visibleDistance))
             {
-                r45Dist = 1 - Round(hit.distance / visibleDistance);
+                r45Dist = 1 - (hit.distance / visibleDistance).Round();
             }
             // left 45
             if (Physics.Raycast(transform.position, Quaternion.AngleAxis(45, Vector3.up) * -transform.right, out hit, visibleDistance))
             {
-                l45Dist = 1 - Round(hit.distance / visibleDistance);
+                l45Dist = 1 - (hit.distance / visibleDistance).Round();
             }
 
             return new List<float>() { fDist, rDist, lDist, r45Dist, l45Dist };
+        }
+
+        void SaveWeightsToFile()
+        {
+            string path = Application.dataPath + "/RaceIA/Data/weights.txt";
+            StreamWriter wf = File.CreateText(path);
+            wf.WriteLine(ann.PrintWeights());
+            wf.Close();
+        }
+
+        bool LoadWeightsFromFile()
+        {
+            string path = Application.dataPath + "/RaceIA/Data/weights.txt";
+            StreamReader wf;
+            try
+            {
+                wf = File.OpenText(path);
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+
+            if (File.Exists(path))
+            {
+                string line = wf.ReadLine();
+                ann.LoadWeights(line);
+                return true;
+            }
+
+            return false;
         }
     }
 }

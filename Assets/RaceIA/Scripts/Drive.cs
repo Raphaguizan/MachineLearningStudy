@@ -9,8 +9,8 @@ namespace MLS.Race
 {
     public class Drive : MonoBehaviour
     {
-        public float speed = 50.0f; 
-        public float rotationSpeed = 100.0f;
+        public float speed = 50f; 
+        public float rotationSpeed = 100f;
 
         public float visibleDistance = 200f;
         List<string> collectedTrainingData = new();
@@ -59,10 +59,6 @@ namespace MLS.Race
                     collectedTrainingData.Add(td);
             }
         }
-        float Round(float x)
-        {
-            return (float)System.Math.Round(x, System.MidpointRounding.AwayFromZero) / 2f;
-        }
 
         string RaycastEyes()
         {
@@ -82,30 +78,30 @@ namespace MLS.Race
             // forward
             if (Physics.Raycast(transform.position, transform.forward, out hit, visibleDistance))
             {
-                fDist = 1 - Round(hit.distance / visibleDistance);
+                fDist = 1 - (hit.distance / visibleDistance).Round();
             }
             // right
             if (Physics.Raycast(transform.position, transform.right, out hit, visibleDistance))
             {
-                rDist = 1 - Round(hit.distance / visibleDistance);
+                rDist = 1 - (hit.distance / visibleDistance).Round();
             }
             // left
             if (Physics.Raycast(transform.position, -transform.right, out hit, visibleDistance))
             {
-                lDist = 1 - Round(hit.distance / visibleDistance);
+                lDist = 1 - (hit.distance / visibleDistance).Round();
             }
             // right 45
             if (Physics.Raycast(transform.position, Quaternion.AngleAxis(-45, Vector3.up) * transform.right, out hit, visibleDistance))
             {
-                r45Dist = 1 - Round(hit.distance / visibleDistance);
+                r45Dist = 1 - (hit.distance / visibleDistance).Round();
             }
             // left 45
             if (Physics.Raycast(transform.position, Quaternion.AngleAxis(45, Vector3.up) * -transform.right, out hit, visibleDistance))
             {
-                l45Dist = 1 - Round(hit.distance / visibleDistance);
+                l45Dist = 1 - (hit.distance / visibleDistance).Round();
             }
 
-            return $"{fDist};{rDist};{lDist};{r45Dist};{l45Dist};{Round(translationInput)};{Round(rotationInput)}";
+            return $"{fDist};{rDist};{lDist};{r45Dist};{l45Dist};{translationInput.Round()};{rotationInput.Round()}";
         }
     }
 }
