@@ -32,7 +32,7 @@ namespace MLS.Race
         // Start is called before the first frame update
         void Start()
         {
-            ann = new(5,2,2,10,.5f);
+            ann = new(5,2,1,10,.5f);
 
             if (loadFromFile && LoadWeightsFromFile())
                 trainingDone = true;
@@ -114,6 +114,7 @@ namespace MLS.Race
                     ann.alpha = Mathf.Clamp((float)ann.alpha + .001f, .01f, .9f);
                     lastSSE = sse;
                 }
+                //lastSSE = sse;
 
                 yield return null;
             }
