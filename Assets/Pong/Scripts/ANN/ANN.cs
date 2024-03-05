@@ -148,9 +148,9 @@ public class ANN{
 			{
 				foreach(double w in n.weights)
 				{
-					weightStr += w + ",";
+					weightStr += w + ";";
 				}
-				weightStr += n.bias + ",";
+				weightStr += n.bias + ";";
 			}
 		}
 		return weightStr;
@@ -159,7 +159,7 @@ public class ANN{
 	public void LoadWeights(string weightStr)
 	{
 		if(weightStr == "") return;
-		string[] weightValues = weightStr.Split(',');
+		string[] weightValues = weightStr.Split(';');
 		int w = 0;
 		foreach(Layer l in layers)
 		{

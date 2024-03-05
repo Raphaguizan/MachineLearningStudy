@@ -2,15 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BallState : MonoBehaviour {
-
-	public bool dropped = false;
-
-	void OnCollisionEnter(Collision col)
+namespace MLS.BallBalance
+{
+	public class BallState : MonoBehaviour
 	{
-		if(col.gameObject.tag == "drop")
+
+		public bool dropped = false;
+
+		void OnCollisionEnter(Collision col)
 		{
-			dropped = true;
+			if (col.gameObject.tag == "drop")
+			{
+				dropped = true;
+			}
 		}
 	}
 }

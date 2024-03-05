@@ -1066,12 +1066,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   visibleDistance: 200
-  epochs: 1000
+  epochs: 1500
   speed: 50
   rotationSpeed: 100
   translation: 0
   rotation: 0
   showDebug: 1
+  loadFromFile: 1
 --- !u!1001 &1175050163
 PrefabInstance:
   m_ObjectHideFlags: 0
