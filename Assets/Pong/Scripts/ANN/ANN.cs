@@ -2,6 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum ActivationType
+{
+	LINEAR,
+	STEP,
+	RELU,
+	LEAKRELU,
+	SIGMOID,
+	TANH,
+}
+
 public class ANN{
 
 	public int numInputs;
@@ -11,7 +21,10 @@ public class ANN{
 	public double alpha;
 	List<Layer> layers = new List<Layer>();
 
-	public ANN(int nI, int nO, int nH, int nPH, double a)
+	private ActivationType hiddenActivation;
+	private ActivationType outputActivation;
+
+	public ANN(int nI, int nO, int nH, int nPH, double a, ActivationType hiddenAct = ActivationType.TANH, ActivationType outputAct = ActivationType.SIGMOID)
 	{
 		numInputs = nI;
 		numOutputs = nO;
@@ -34,7 +47,15 @@ public class ANN{
 		{
 			layers.Add(new Layer(numOutputs, numInputs));
 		}
+
+		ChangeActivationFunction(hiddenAct, outputAct);
 	}
+
+	public void ChangeActivationFunction(ActivationType hiddenAct, ActivationType outputAct)
+	{
+        hiddenActivation = hiddenAct;
+        outputActivation = outputAct;
+    }
 
 	public List<double> Train(List<double> inputValues, List<double> desiredOutput)
 	{
@@ -220,14 +241,27 @@ public class ANN{
 
 	double ActivationFunction(double value)
 	{
-		return TanH(value);
+		return ActivationFunctionSelection(hiddenActivation,value);
 	}
 
 	double ActivationFunctionO(double value)
 	{
-		return Sigmoid(value);
-	}
+        return ActivationFunctionSelection(outputActivation, value);
+    }
 
+
+    double ActivationFunctionSelection(ActivationType type, double value)
+	{
+        return type switch
+        {
+            ActivationType.STEP => Step(value),
+            ActivationType.RELU => ReLu(value),
+            ActivationType.LEAKRELU => LeakyReLu(value),
+            ActivationType.SIGMOID => Sigmoid(value),
+            ActivationType.TANH => TanH(value),
+            _ => Linear(value),
+        };
+    }
 	double TanH(double value)
 	{
 		double k = (double) System.Math.Exp(-2*value);
@@ -245,7 +279,15 @@ public class ANN{
 		return value;
 	}
 
-	double LeakyReLu(double value)
+    double Step(double value)
+    {
+		if (value < 0)
+			return 0;
+
+        return 1;
+    }
+
+    double LeakyReLu(double value)
 	{
 		if(value < 0) return 0.01*value;
    		else return value;
