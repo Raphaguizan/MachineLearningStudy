@@ -1247,8 +1247,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   birdCtrl: {fileID: 212325248396129433}
   manager: {fileID: 374492104}
-  pathToSaveWeights: /Qlearning flapBird/weights.txt
-  pathToSaveTrainingData: /Qlearning flapBird/data.txt
+  pathToSaveWeights: /Qlearning flapBird/data/weights.txt
+  pathToSaveTrainingData: /Qlearning flapBird/data/data.txt
   autoSaveTime: 60
   showDebug: 0
   simulationTime: 5

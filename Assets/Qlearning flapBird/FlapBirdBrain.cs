@@ -45,7 +45,7 @@ public class FlapBirdBrain : MonoBehaviour
         GUI.BeginGroup(new Rect(10, 10, 600, 150));
         GUI.Box(new Rect(0, 0, 140, 140), "Stats", guiStyle);
         GUI.Label(new Rect(10, 25, 500, 30), "Fails: " + failCount, guiStyle);
-        GUI.Label(new Rect(10, 50, 500, 30), "Decay Rate: " + agent.ExploreRate, guiStyle);
+        GUI.Label(new Rect(10, 50, 500, 30), "Decay Rate: " + agent.exploreRate, guiStyle);
         GUI.Label(new Rect(10, 75, 500, 30), "Last Best round time: " + maxRoundTime, guiStyle);
         GUI.Label(new Rect(10, 100, 500, 30), "This round time: " + timer, guiStyle);
         GUI.Label(new Rect(10, 125, 500, 30), "Total Time: " + (totalTime + Time.realtimeSinceStartup).ToTime(), guiStyle);
@@ -84,7 +84,7 @@ public class FlapBirdBrain : MonoBehaviour
 
     private void AutoSave()
     {
-        if ((int)Time.realtimeSinceStartup % autoSaveTime == 0)
+        if ((int)(Time.realtimeSinceStartup + totalTime) % autoSaveTime == 0)
         {
             if (!alreadySaved)
             {
@@ -166,7 +166,7 @@ public class FlapBirdBrain : MonoBehaviour
     {
         string p = Application.dataPath + pathToSaveTrainingData;
         StreamWriter wf = File.CreateText(p);
-        string data = $"{failCount}|{agent.ExploreRate}|{maxRoundTime}|{timer}|{totalTime + Time.realtimeSinceStartup}";
+        string data = $"{failCount}|{agent.exploreRate}|{maxRoundTime}|{timer}|{totalTime + Time.realtimeSinceStartup}";
         wf.WriteLine(data);
         wf.Close();
     }
@@ -190,6 +190,7 @@ public class FlapBirdBrain : MonoBehaviour
             var list = line.Split('|');
 
             failCount = int.Parse(list[0]);
+            agent.exploreRate = float.Parse(list[1]);
             maxRoundTime = float.Parse(list[2]);
             timer = float.Parse(list[3]);
             totalTime = float.Parse(list[4]);
@@ -198,6 +199,14 @@ public class FlapBirdBrain : MonoBehaviour
         }
 
         return false;
+    }
+
+    [ContextMenu("Reset explore rate")]
+    public void ResetExploreRate()
+    {
+        Agent newAg = new(1,1,1,1,1);
+        agent.exploreRate = newAg.exploreRate;
+        newAg = null;
     }
 
     private void OnApplicationQuit()

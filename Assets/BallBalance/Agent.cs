@@ -26,10 +26,10 @@ namespace MLS.QLearning
         ANN ann;
 
         float discount = 0.99f;                         //how much future states affect rewards
-        float exploreRate = 90.0f;                     //chance of picking random action
+        public float exploreRate = 90.0f;                     //chance of picking random action
         float maxExploreRate = 100.0f;                  //max chance value
         float minExploreRate = 0.01f;                   //min chance value
-        float exploreDecay = 0.0001f;                   //chance decay amount for each update
+        float exploreDecay = 0.00001f;                   //chance decay amount for each update
 
         float reward = 0.0f;                            //reward to associate with actions
         List<Replay> replayMemory = new List<Replay>(); //memory - list of past actions and rewards
@@ -39,16 +39,15 @@ namespace MLS.QLearning
         double maxQ;
         private List<double> currentState = new();
 
-        public float ExploreRate => exploreRate;
 
         List<double> qs = new List<double>();
 
         private string savePath = "";
         public bool showDebug = false;
 
-        public Agent(int nI, int nO, int nH, int nPH, double a)
+        public Agent(int nI, int nO, int nH, int nPH, double a, ActivationType hiddenAct = ActivationType.TANH, ActivationType outputAct = ActivationType.SIGMOID)
         {
-            ann = new ANN(nI, nO, nH, nPH, a);
+            ann = new ANN(nI, nO, nH, nPH, a, hiddenAct, outputAct);
             numOutput = nO;
         }
 

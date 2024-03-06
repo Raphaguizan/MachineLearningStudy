@@ -37,7 +37,7 @@ namespace MLS.BallBalance
 			GUI.BeginGroup(new Rect(10, 10, 600, 150));
 			GUI.Box(new Rect(0, 0, 140, 140), "Stats", guiStyle);
 			GUI.Label(new Rect(10, 25, 500, 30), "Fails: " + failCount, guiStyle);
-			GUI.Label(new Rect(10, 50, 500, 30), "Decay Rate: " + ag.ExploreRate, guiStyle);
+			GUI.Label(new Rect(10, 50, 500, 30), "Decay Rate: " + ag.exploreRate, guiStyle);
 			GUI.Label(new Rect(10, 75, 500, 30), "Last Best Balance: " + maxBalanceTime, guiStyle);
 			GUI.Label(new Rect(10, 100, 500, 30), "This Balance: " + timer, guiStyle);
 			GUI.EndGroup();
