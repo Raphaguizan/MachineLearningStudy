@@ -5,6 +5,8 @@ using UnityEngine;
 public class LevelManager : MonoBehaviour
 {
     [SerializeField]
+    private BirdController birdController;
+    [SerializeField]
     private GameObject obstaclePrefab;
     [SerializeField]
     private float obstacleSpeed = 1f;
@@ -19,6 +21,13 @@ public class LevelManager : MonoBehaviour
 
     private List<GameObject> obstacles = new();
     private float elapsedTime = 0;
+
+    private void Start()
+    {
+        birdController.OnDieCallBack.AddListener(ResetLevel);
+        SpawnObstacle();
+        elapsedTime = 0;
+    }
     private void SpawnObstacle()
     {
         GameObject newObstacle = GetUnactiveObstacle();
@@ -63,6 +72,14 @@ public class LevelManager : MonoBehaviour
         }
     }
 
+    public void ResetLevel()
+    {
+        foreach (var ob in obstacles)
+        {
+            ob.SetActive(false);
+        }
+    }
+
     private void MoveObstacles()
     {
         foreach (var obstacle in obstacles)
@@ -83,5 +100,29 @@ public class LevelManager : MonoBehaviour
                 obstacle.SetActive(false);
             }
         }
+    }
+
+    public Vector3 NextObPos()
+    {
+        GameObject next = null;
+        float closiest = float.MaxValue;
+        foreach (var obstacle in obstacles)
+        {
+            if (obstacle.activeInHierarchy && obstacle.transform.position.x > birdController.transform.position.x && obstacle.transform.position.x < closiest)
+            {
+                closiest = obstacle.transform.position.x;
+                next = obstacle;
+            }
+        }
+
+        if(next == null)
+            return - Vector3.one;
+
+        return next.transform.position;
+    }
+
+    private void OnDestroy()
+    {
+        birdController.OnDieCallBack.RemoveListener(ResetLevel);
     }
 }

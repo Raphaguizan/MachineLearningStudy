@@ -1,9 +1,12 @@
+using NaughtyAttributes;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.U2D;
-using UnityStandardAssets.Vehicles.Ball;
+using Random = UnityEngine.Random;
 
 namespace MLS.QLearning
 {
@@ -39,6 +42,8 @@ namespace MLS.QLearning
         public float ExploreRate => exploreRate;
 
         List<double> qs = new List<double>();
+
+        private string savePath = "";
 
         public Agent(int nI, int nO, int nH, int nPH, double a)
         {
@@ -139,6 +144,54 @@ namespace MLS.QLearning
                 ann.Train(replayMemory[i].states, toutputsOld);
             }
             replayMemory.Clear();
+        }
+
+        void SaveWeights()
+        {
+            if (savePath.Equals(""))
+            {
+                Debug.LogError("The save path is empty!");
+                return;
+            }
+            SaveWeights(savePath);
+        }
+
+        void SaveWeights(string path)
+        {
+            savePath = path;
+            string p = Application.dataPath + path;
+            StreamWriter wf = File.CreateText(p);
+            wf.WriteLine(ann.PrintWeights());
+            wf.Close();
+        }
+
+        bool LoadWeights()
+        {
+            return LoadWeights(savePath);
+        }
+
+        bool LoadWeights(string path)
+        {
+            savePath = path;
+            string p = Application.dataPath + path;
+            StreamReader wf;
+            try
+            {
+                wf = File.OpenText(p);
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+
+            if (File.Exists(p))
+            {
+                string line = wf.ReadLine();
+                ann.LoadWeights(line);
+                return true;
+            }
+
+            return false;
         }
     }
 }
