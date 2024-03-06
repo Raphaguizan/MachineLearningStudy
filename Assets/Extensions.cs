@@ -1,3 +1,5 @@
+using JetBrains.Annotations;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -34,5 +36,11 @@ public static class Extensions
     public static float Round(this float x)
     {
         return (float)System.Math.Round(x, System.MidpointRounding.AwayFromZero) / 2.0f;
+    }
+
+    public static string ToTime(this float t, string format = "dd':'hh':'mm':'ss")
+    {
+        TimeSpan time = TimeSpan.FromSeconds(t);
+        return time.ToString(format);
     }
 }

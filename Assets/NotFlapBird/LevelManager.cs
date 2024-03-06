@@ -102,23 +102,20 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    public Vector3 NextObPos()
+    public Transform NextObPos()
     {
-        GameObject next = null;
+        Transform next = null;
         float closiest = float.MaxValue;
         foreach (var obstacle in obstacles)
         {
             if (obstacle.activeInHierarchy && obstacle.transform.position.x > birdController.transform.position.x && obstacle.transform.position.x < closiest)
             {
                 closiest = obstacle.transform.position.x;
-                next = obstacle;
+                next = obstacle.transform;
             }
         }
 
-        if(next == null)
-            return - Vector3.one;
-
-        return next.transform.position;
+        return next;
     }
 
     private void OnDestroy()

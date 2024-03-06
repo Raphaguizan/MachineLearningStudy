@@ -26,10 +26,10 @@ namespace MLS.QLearning
         ANN ann;
 
         float discount = 0.99f;                         //how much future states affect rewards
-        float exploreRate = 100.0f;                     //chance of picking random action
+        float exploreRate = 90.0f;                     //chance of picking random action
         float maxExploreRate = 100.0f;                  //max chance value
         float minExploreRate = 0.01f;                   //min chance value
-        float exploreDecay = 0.001f;                   //chance decay amount for each update
+        float exploreDecay = 0.0001f;                   //chance decay amount for each update
 
         float reward = 0.0f;                            //reward to associate with actions
         List<Replay> replayMemory = new List<Replay>(); //memory - list of past actions and rewards
@@ -44,11 +44,17 @@ namespace MLS.QLearning
         List<double> qs = new List<double>();
 
         private string savePath = "";
+        public bool showDebug = false;
 
         public Agent(int nI, int nO, int nH, int nPH, double a)
         {
             ann = new ANN(nI, nO, nH, nPH, a);
             numOutput = nO;
+        }
+
+        public void SetActivationFunction(ActivationType hiddenActivationFunc, ActivationType outputActivationFunc)
+        {
+            ann.ChangeActivationFunction(hiddenActivationFunc, outputActivationFunc);
         }
 
         List<double> SoftMax(List<double> values)
@@ -109,7 +115,7 @@ namespace MLS.QLearning
         public void Reward(List<double> state, float reward)
         {
             this.reward = reward;
-
+            if(showDebug)Debug.Log($"Rewarded ( {reward} )");
             Replay lastMemory = new Replay(state, reward);
 
             if (replayMemory.Count > mCapacity)
@@ -146,7 +152,7 @@ namespace MLS.QLearning
             replayMemory.Clear();
         }
 
-        void SaveWeights()
+        public void SaveWeights()
         {
             if (savePath.Equals(""))
             {
@@ -156,7 +162,7 @@ namespace MLS.QLearning
             SaveWeights(savePath);
         }
 
-        void SaveWeights(string path)
+        public void SaveWeights(string path)
         {
             savePath = path;
             string p = Application.dataPath + path;
@@ -165,12 +171,12 @@ namespace MLS.QLearning
             wf.Close();
         }
 
-        bool LoadWeights()
+        public bool LoadWeights()
         {
             return LoadWeights(savePath);
         }
 
-        bool LoadWeights(string path)
+        public bool LoadWeights(string path)
         {
             savePath = path;
             string p = Application.dataPath + path;
