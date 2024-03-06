@@ -166,7 +166,7 @@ public class FlapBirdBrain : MonoBehaviour
     {
         string p = Application.dataPath + pathToSaveTrainingData;
         StreamWriter wf = File.CreateText(p);
-        string data = $"{failCount}|{agent.exploreRate}|{maxRoundTime}|{timer}|{totalTime + Time.realtimeSinceStartup}";
+        string data = $"{failCount}|{agent.exploreRate}|{maxRoundTime}|{totalTime + Time.realtimeSinceStartup}";
         wf.WriteLine(data);
         wf.Close();
     }
@@ -192,8 +192,7 @@ public class FlapBirdBrain : MonoBehaviour
             failCount = int.Parse(list[0]);
             agent.exploreRate = float.Parse(list[1]);
             maxRoundTime = float.Parse(list[2]);
-            timer = float.Parse(list[3]);
-            totalTime = float.Parse(list[4]);
+            totalTime = float.Parse(list[3]);
 
             return true;
         }
