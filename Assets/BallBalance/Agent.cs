@@ -29,11 +29,11 @@ namespace MLS.QLearning
         public float exploreRate = 90.0f;                     //chance of picking random action
         float maxExploreRate = 100.0f;                  //max chance value
         float minExploreRate = 0.01f;                   //min chance value
-        float exploreDecay = 0.00001f;                   //chance decay amount for each update
+        float exploreDecay = 0.0005f;                   //chance decay amount for each update
 
         float reward = 0.0f;                            //reward to associate with actions
         List<Replay> replayMemory = new List<Replay>(); //memory - list of past actions and rewards
-        int mCapacity = 10000;                          //memory capacity
+        int mCapacity = 1000;                          //memory capacity
         private int numOutput;
 
         double maxQ;
@@ -125,6 +125,9 @@ namespace MLS.QLearning
 
         public void Train()
         {
+            if (replayMemory.Count < mCapacity)
+                return;
+
             for (int i = replayMemory.Count - 1; i >= 0; i--)
             {
                 List<double> toutputsOld = new List<double>();
@@ -148,6 +151,11 @@ namespace MLS.QLearning
                 toutputsOld[action] = feedback;
                 ann.Train(replayMemory[i].states, toutputsOld);
             }
+            //ResetMemory();
+        }
+
+        public void ResetMemory()
+        {
             replayMemory.Clear();
         }
 

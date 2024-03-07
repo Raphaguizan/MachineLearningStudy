@@ -1,3 +1,4 @@
+using NaughtyAttributes;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,6 +17,7 @@ public class BirdController : MonoBehaviour
     private Vector2 startPos;
     private Rigidbody2D rb;
 
+    [SerializeField, ReadOnly]
     private bool died = false;
 
     public bool Die => died;
@@ -39,6 +41,21 @@ public class BirdController : MonoBehaviour
         died = true;
         OnDieCallBack.Invoke();
         if(autoReset)ResetBird();
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        died = false;
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        died = true;
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        died = false;
     }
 
     public void Jump()

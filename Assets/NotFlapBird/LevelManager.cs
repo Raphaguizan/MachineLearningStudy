@@ -1,9 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using NaughtyAttributes;
 
 public class LevelManager : MonoBehaviour
 {
+    [SerializeField]
+    private bool spawn = true;
+
+    [SerializeField]
+    private bool randomPos = true;
+    [SerializeField, ShowIf("randomPos")]
+    private Vector2 heigthLimits;
+    [SerializeField, HideIf("randomPos")]
+    private List<float> notRandomPosList;
+
     [SerializeField]
     private BirdController birdController;
     [SerializeField]
@@ -13,20 +24,18 @@ public class LevelManager : MonoBehaviour
     [SerializeField]
     private float spawnDelay = 1f;
     [SerializeField]
-    private Vector2 heigthLimits;
-    [SerializeField]
     private Transform spawnPoint;
     [SerializeField]
     private Transform deadPoint;
 
     private List<GameObject> obstacles = new();
     private float elapsedTime = 0;
+    private int notRandomIndex = 0;
 
     private void Start()
     {
         birdController.OnDieCallBack.AddListener(ResetLevel);
-        SpawnObstacle();
-        elapsedTime = 0;
+        ResetLevel();
     }
     private void SpawnObstacle()
     {
@@ -55,13 +64,26 @@ public class LevelManager : MonoBehaviour
 
     private void RandomizeObstacleHeigth(GameObject obstacle)
     {
-        obstacle.transform.position += Vector3.up * Random.Range(heigthLimits.x, heigthLimits.y);
+        if (randomPos)
+        {
+            obstacle.transform.position += Vector3.up * Random.Range(heigthLimits.x, heigthLimits.y);
+            return;
+        }
+
+        obstacle.transform.position += Vector3.up * notRandomPosList[notRandomIndex];
+        notRandomIndex++;
+
+        if (notRandomIndex >= notRandomPosList.Count)
+            notRandomIndex = 0;
     }
     
     void Update()
     {
         CheckDeath();
         MoveObstacles();
+
+        if (!spawn)
+            return;
 
         elapsedTime += Time.deltaTime;
 
@@ -74,10 +96,16 @@ public class LevelManager : MonoBehaviour
 
     public void ResetLevel()
     {
+        if (!spawn)
+            return;
+
+        notRandomIndex = 0;
         foreach (var ob in obstacles)
         {
             ob.SetActive(false);
         }
+        SpawnObstacle();
+        elapsedTime = 0;
     }
 
     private void MoveObstacles()

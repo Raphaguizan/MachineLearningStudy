@@ -411,11 +411,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8bb49d56a8d50c540b2a9ea5b72dceb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawn: 1
+  randomPos: 0
+  heigthLimits: {x: -1.8, y: 3.3}
+  notRandomPosList:
+  - -1.5
+  - 3
+  - 1
+  - 0
+  - 2
+  - -1
   birdController: {fileID: 212325248396129433}
   obstaclePrefab: {fileID: 3670014291488402372, guid: 696b08d22b2c62b4c959aa35412b343c, type: 3}
   obstacleSpeed: 2
-  spawnDelay: 2
-  heigthLimits: {x: -1.8, y: 3.3}
+  spawnDelay: 5
   spawnPoint: {fileID: 862897613}
   deadPoint: {fileID: 1584758251}
 --- !u!4 &374492105
@@ -852,7 +861,7 @@ Transform:
   m_GameObject: {fileID: 1584758250}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -10.67, y: 0, z: 0}
+  m_LocalPosition: {x: -9.97, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1233,6 +1242,7 @@ MonoBehaviour:
   OnDieCallBack:
     m_PersistentCalls:
       m_Calls: []
+  died: 0
 --- !u!114 &212325248396129434
 MonoBehaviour:
   m_ObjectHideFlags: 0

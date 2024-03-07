@@ -55,7 +55,7 @@ public class FlapBirdBrain : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        agent = new(4, 2, 1, 6, .3f);
+        agent = new(4, 2, 3, 10, .2f);
         agent.SetActivationFunction(ActivationType.TANH, ActivationType.STEP);
 
         Debug.Log($"weights {(agent.LoadWeights(pathToSaveWeights)? "": "not")} loaded");
@@ -104,7 +104,7 @@ public class FlapBirdBrain : MonoBehaviour
 
         Transform nextObstacle = manager.NextObPos();
         Vector2 nextObstaclePos = -Vector2.one * 10;
-        if(nextObstacle != null)
+        if (nextObstacle != null)
             nextObstaclePos = nextObstacle.position;
 
         states.Add(birdCtrl.Velocity.y);
@@ -124,13 +124,13 @@ public class FlapBirdBrain : MonoBehaviour
 
         //movement
 
-        if (IAResp > .5f)
+        if ((qIndex == 0 && IAResp > .5f) || (qIndex == 1 && IAResp <= .5f))
             birdCtrl.Jump();
 
         // reward
         if (birdCtrl.Die)
             agent.Reward(-1f);
-        else if(lastObstacle != null &&  lastObstacle != nextObstacle)
+        else if (lastObstacle != null && lastObstacle != nextObstacle)
             agent.Reward(1f);
         else
             agent.Reward(.1f);
@@ -142,7 +142,6 @@ public class FlapBirdBrain : MonoBehaviour
         {
             agent.Train();
             birdCtrl.ResetBird();
-            nextObstacle = null;
 
             if (timer > maxRoundTime)
             {
