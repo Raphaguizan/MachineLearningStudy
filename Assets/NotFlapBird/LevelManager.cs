@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using NaughtyAttributes;
+using System;
+using Random = UnityEngine.Random;
 
 public class LevelManager : MonoBehaviour
 {
@@ -31,10 +33,13 @@ public class LevelManager : MonoBehaviour
     private List<GameObject> obstacles = new();
     private float elapsedTime = 0;
     private int notRandomIndex = 0;
+    [HideInInspector]
+    public Transform nextObstacle = null;
+    [HideInInspector]
+    public Transform lastObstacle = null;
 
     private void Start()
     {
-        birdController.OnDieCallBack.AddListener(ResetLevel);
         ResetLevel();
     }
     private void SpawnObstacle()
@@ -85,6 +90,12 @@ public class LevelManager : MonoBehaviour
         if (!spawn)
             return;
 
+        if (birdController.Die)
+        {
+            ResetLevel();
+            return;
+        }
+
         elapsedTime += Time.deltaTime;
 
         if(elapsedTime >= spawnDelay)
@@ -99,13 +110,22 @@ public class LevelManager : MonoBehaviour
         if (!spawn)
             return;
 
-        notRandomIndex = 0;
-        foreach (var ob in obstacles)
-        {
-            ob.SetActive(false);
-        }
-        SpawnObstacle();
-        elapsedTime = 0;
+        StartCoroutine(WaitOneFrame(() => {
+            notRandomIndex = 0;
+            foreach (var ob in obstacles)
+            {
+                ob.SetActive(false);
+            }
+            SpawnObstacle();
+            CalcNextObstacle();
+            elapsedTime = 0;
+        }));    
+    }
+
+    IEnumerator WaitOneFrame(Action func)
+    {
+        yield return new WaitForFixedUpdate();
+        func.Invoke();
     }
 
     private void MoveObstacles()
@@ -115,6 +135,11 @@ public class LevelManager : MonoBehaviour
             if (obstacle.activeInHierarchy)
             {
                 obstacle.transform.Translate(Vector2.left * obstacleSpeed * Time.deltaTime);
+
+                if((obstacle.transform == nextObstacle && obstacle.transform.position.x < birdController.transform.position.x) || nextObstacle == null)
+                {
+                    CalcNextObstacle();
+                }
             }
         }
     }
@@ -130,7 +155,7 @@ public class LevelManager : MonoBehaviour
         }
     }
 
-    public Transform NextObPos()
+    public void CalcNextObstacle()
     {
         Transform next = null;
         float closiest = float.MaxValue;
@@ -143,11 +168,29 @@ public class LevelManager : MonoBehaviour
             }
         }
 
-        return next;
+        if(nextObstacle != next)
+            lastObstacle = nextObstacle;
+
+        nextObstacle =  next;
     }
 
-    private void OnDestroy()
+    public float DistFromDeathPoint(bool next = true)
     {
-        birdController.OnDieCallBack.RemoveListener(ResetLevel);
+        if (next)
+        {
+            return nextObstacle == null ? float.MaxValue : nextObstacle.position.x - deadPoint.position.x;
+        }
+
+        return lastObstacle == null ? float.MaxValue : lastObstacle.position.x - deadPoint.position.x;
     }
+
+    public float NextObsHeight(bool next = true)
+    {
+        if (next)
+        {
+            return nextObstacle == null ? float.MaxValue : nextObstacle.position.y;
+        }
+        return lastObstacle == null ? float.MaxValue : lastObstacle.position.y;
+    }
+    
 }

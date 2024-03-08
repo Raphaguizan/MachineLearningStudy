@@ -1,5 +1,6 @@
 using MLS.NNw;
 using MLS.QLearning;
+using NaughtyAttributes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,11 +14,15 @@ public class FlapBirdBrain : MonoBehaviour
     private BirdController birdCtrl;
     [SerializeField]
     private LevelManager manager;
+    [SerializeField, ShowNativeProperty]
+    private int MemoryCount => CountMemory();
 
     [Space, SerializeField]
     private string pathToSaveWeights = "/weights.txt";
     [SerializeField]
     private string pathToSaveTrainingData = "/data.txt";
+    [SerializeField]
+    private string pathToSaveMemory = "/memory.txt";
     [SerializeField]
     private int autoSaveTime = 60;
 
@@ -37,6 +42,10 @@ public class FlapBirdBrain : MonoBehaviour
 
     private Transform lastObstacle = null;
 
+
+    private bool playerMode = false;
+    
+
     GUIStyle guiStyle = new GUIStyle();
     void OnGUI()
     {
@@ -55,11 +64,14 @@ public class FlapBirdBrain : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        agent = new(4, 2, 3, 10, .2f);
+        agent = new(3, 2, 2, 6, .2f);
         agent.SetActivationFunction(ActivationType.TANH, ActivationType.STEP);
 
         Debug.Log($"weights {(agent.LoadWeights(pathToSaveWeights)? "": "not")} loaded");
         Debug.Log($"Training data {(LoadData()? "": "not")} loaded");
+        
+        if(!playerMode)
+            Debug.Log($"Memory data {(agent.LoadMemory(pathToSaveMemory)? "": "not")} loaded");
 
         Time.timeScale = simulationTime;
     }
@@ -98,49 +110,64 @@ public class FlapBirdBrain : MonoBehaviour
         }
     }
 
+    public void ActivePlayerMode(bool val)
+    {
+        playerMode = val;
+    }
+
     private void FixedUpdate()
     {
         List<double> states = new();
 
-        Transform nextObstacle = manager.NextObPos();
-        Vector2 nextObstaclePos = -Vector2.one * 10;
-        if (nextObstacle != null)
-            nextObstaclePos = nextObstacle.position;
-
-        states.Add(birdCtrl.Velocity.y);
         states.Add(birdCtrl.transform.position.y);
-        states.Add(nextObstaclePos.y);
-        states.Add(nextObstaclePos.x - birdCtrl.transform.position.x);
+        states.Add(manager.NextObsHeight());
+        states.Add(manager.DistFromDeathPoint());
 
-        int qIndex = agent.GetQIndex(states);
-        float IAResp = agent.GetQValue(qIndex);
-
-
-        if (showDebug)
+        if (!playerMode)
         {
-            Debug.Log($"index = {qIndex}");
-            Debug.Log($"value = {IAResp}");
+            int qIndex = agent.GetQIndex(states);
+            float IAResp = agent.GetQValue(qIndex);
+
+
+            if (showDebug)
+            {
+                Debug.Log($"index = {qIndex}");
+                Debug.Log($"value = {IAResp}");
+            }
+
+            //movement
+
+            if ((qIndex == 0 && IAResp > .5f) || (qIndex == 1 && IAResp <= .5f))
+                birdCtrl.Jump();
         }
-
-        //movement
-
-        if ((qIndex == 0 && IAResp > .5f) || (qIndex == 1 && IAResp <= .5f))
-            birdCtrl.Jump();
 
         // reward
         if (birdCtrl.Die)
-            agent.Reward(-1f);
-        else if (lastObstacle != null && lastObstacle != nextObstacle)
-            agent.Reward(1f);
+        {
+            if (birdCtrl.lastDeathTag.Equals("wall"))
+                agent.Reward(states, -5f);
+            else
+                agent.Reward(states, -1f);
+        }
+        else if (lastObstacle != null && lastObstacle != manager.nextObstacle)
+        {
+            states.Clear();
+            states.Add(birdCtrl.transform.position.y);
+            states.Add(manager.NextObsHeight(false));
+            states.Add(manager.DistFromDeathPoint(false));
+            agent.Reward(states, 10f);
+        }
         else
-            agent.Reward(.1f);
+            agent.Reward(states, .1f);
 
-        lastObstacle = nextObstacle;
+        lastObstacle = manager.nextObstacle;
 
         // train and restart
         if (birdCtrl.Die)
         {
-            agent.Train();
+            if(!playerMode)
+                agent.Train();
+
             birdCtrl.ResetBird();
 
             if (timer > maxRoundTime)
@@ -151,11 +178,19 @@ public class FlapBirdBrain : MonoBehaviour
             timer = 0;
 
             failCount++;
+            lastObstacle = null;
         }
 
     }
     private void Save()
     {
+        if (playerMode)
+        {
+            agent.SaveMemory(pathToSaveMemory);
+            Debug.Log("memory saved");
+            return;
+        }
+
         agent.SaveWeights(pathToSaveWeights);
         SaveData();
         Debug.Log("saved");
@@ -205,6 +240,12 @@ public class FlapBirdBrain : MonoBehaviour
         Agent newAg = new(1,1,1,1,1);
         agent.exploreRate = newAg.exploreRate;
         newAg = null;
+    }
+    private int CountMemory()
+    {
+        if (agent != null)
+            return agent.MemoryCount;
+        else return -1;
     }
 
     private void OnApplicationQuit()

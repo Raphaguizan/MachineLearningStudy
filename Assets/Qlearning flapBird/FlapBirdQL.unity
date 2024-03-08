@@ -171,7 +171,7 @@ GameObject:
   - component: {fileID: 67928754}
   m_Layer: 0
   m_Name: FrontWall
-  m_TagString: dead
+  m_TagString: wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -427,6 +427,7 @@ MonoBehaviour:
   spawnDelay: 5
   spawnPoint: {fileID: 862897613}
   deadPoint: {fileID: 1584758251}
+  nextObstacle: {fileID: 0}
 --- !u!4 &374492105
 Transform:
   m_ObjectHideFlags: 0
@@ -558,7 +559,7 @@ GameObject:
   - component: {fileID: 726529375}
   m_Layer: 0
   m_Name: BottomWall
-  m_TagString: bottom
+  m_TagString: wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -719,7 +720,7 @@ GameObject:
   - component: {fileID: 1121716680}
   m_Layer: 0
   m_Name: BackWall
-  m_TagString: dead
+  m_TagString: wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -880,7 +881,7 @@ GameObject:
   - component: {fileID: 1881566772}
   m_Layer: 0
   m_Name: TopWall
-  m_TagString: top
+  m_TagString: wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1219,12 +1220,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1629248960794813}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0f071e4b42fee32499ed2f2853bfcd7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   controller: {fileID: 212325248396129433}
+  birdBrain: {fileID: 212325248396129434}
+  activeTrain: 1
 --- !u!114 &212325248396129433
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1243,6 +1246,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   died: 0
+  lastDeathTag: 
 --- !u!114 &212325248396129434
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1259,9 +1263,10 @@ MonoBehaviour:
   manager: {fileID: 374492104}
   pathToSaveWeights: /Qlearning flapBird/data/weights.txt
   pathToSaveTrainingData: /Qlearning flapBird/data/data.txt
+  pathToSaveMemory: /Qlearning flapBird/data/memory1.txt
   autoSaveTime: 60
   showDebug: 0
-  simulationTime: 5
+  simulationTime: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

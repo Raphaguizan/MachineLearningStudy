@@ -11,8 +11,6 @@ public class BirdController : MonoBehaviour
     [SerializeField]
     private bool autoReset = false;
 
-    public UnityEvent OnDieCallBack;
-
 
     private Vector2 startPos;
     private Rigidbody2D rb;
@@ -21,6 +19,7 @@ public class BirdController : MonoBehaviour
     private bool died = false;
 
     public bool Die => died;
+    public string lastDeathTag = "";
     public Vector2 Velocity => rb.velocity;
 
     private void Start()
@@ -38,24 +37,9 @@ public class BirdController : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        lastDeathTag = collision.gameObject.tag;
         died = true;
-        OnDieCallBack.Invoke();
         if(autoReset)ResetBird();
-    }
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        died = false;
-    }
-
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        died = true;
-    }
-
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        died = false;
     }
 
     public void Jump()

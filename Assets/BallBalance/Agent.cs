@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.U2D;
+using static UnityEditor.Progress;
 using Random = UnityEngine.Random;
 
 namespace MLS.QLearning
@@ -20,6 +21,31 @@ namespace MLS.QLearning
             states = st;
             reward = r;
         }
+
+        public Replay(string fileText)
+        {
+            var fileData = fileText.Split('|');
+            reward = double.Parse(fileData[1]);
+
+            var newStates = fileData[0].Split(';');
+            states = new();
+            foreach (var item in newStates)
+            {
+                states.Add(double.Parse(item));
+            }
+        }
+
+        public override string ToString()
+        {
+            string resp = "";
+            foreach (double s in states)
+            {
+                resp += s+";";
+            }
+            resp = resp[..^1];
+            resp += "|"+reward;
+            return resp;
+        }
     }
     public class Agent
     {
@@ -33,7 +59,7 @@ namespace MLS.QLearning
 
         float reward = 0.0f;                            //reward to associate with actions
         List<Replay> replayMemory = new List<Replay>(); //memory - list of past actions and rewards
-        int mCapacity = 1000;                          //memory capacity
+        int mCapacity = 5000;                          //memory capacity
         private int numOutput;
 
         double maxQ;
@@ -44,6 +70,7 @@ namespace MLS.QLearning
 
         private string savePath = "";
         public bool showDebug = false;
+        public int MemoryCount => replayMemory.Count;
 
         public Agent(int nI, int nO, int nH, int nPH, double a, ActivationType hiddenAct = ActivationType.TANH, ActivationType outputAct = ActivationType.SIGMOID)
         {
@@ -154,11 +181,60 @@ namespace MLS.QLearning
             //ResetMemory();
         }
 
+        #region memory manager
         public void ResetMemory()
         {
             replayMemory.Clear();
         }
 
+        public void SaveMemory(string path)
+        {
+            savePath = path;
+            string p = Application.dataPath + path;
+            StreamWriter wf = File.CreateText(p);
+
+            string line = "";
+            foreach (var memo in replayMemory)
+            {
+                line += memo.ToString() + "\n";
+            }
+            line = line[..^1];
+            wf.WriteLine(line);
+            wf.Close();
+        }
+
+        public bool LoadMemory(string path)
+        {
+            savePath = path;
+            string p = Application.dataPath + path;
+            StreamReader wf;
+            try
+            {
+                wf = File.OpenText(p);
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+
+            if (File.Exists(p))
+            {
+                replayMemory.Clear();
+
+                string line;
+                while ((line = wf.ReadLine()) != null)
+                {
+                    replayMemory.Add(new Replay(line));
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+        #endregion
+
+        #region weights save
         public void SaveWeights()
         {
             if (savePath.Equals(""))
@@ -206,5 +282,6 @@ namespace MLS.QLearning
 
             return false;
         }
+        #endregion
     }
 }
