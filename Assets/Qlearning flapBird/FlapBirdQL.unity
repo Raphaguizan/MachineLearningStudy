@@ -428,6 +428,7 @@ MonoBehaviour:
   spawnPoint: {fileID: 862897613}
   deadPoint: {fileID: 1584758251}
   nextObstacle: {fileID: 0}
+  lastObstacle: {fileID: 0}
 --- !u!4 &374492105
 Transform:
   m_ObjectHideFlags: 0
@@ -1227,7 +1228,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   controller: {fileID: 212325248396129433}
   birdBrain: {fileID: 212325248396129434}
-  activeTrain: 1
+  activeTrain: 0
 --- !u!114 &212325248396129433
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1242,9 +1243,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   jumpForce: 6
   autoReset: 0
-  OnDieCallBack:
-    m_PersistentCalls:
-      m_Calls: []
   died: 0
   lastDeathTag: 
 --- !u!114 &212325248396129434
@@ -1266,7 +1264,7 @@ MonoBehaviour:
   pathToSaveMemory: /Qlearning flapBird/data/memory1.txt
   autoSaveTime: 60
   showDebug: 0
-  simulationTime: 1
+  simulationTime: 5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

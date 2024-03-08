@@ -59,7 +59,7 @@ namespace MLS.QLearning
 
         float reward = 0.0f;                            //reward to associate with actions
         List<Replay> replayMemory = new List<Replay>(); //memory - list of past actions and rewards
-        int mCapacity = 5000;                          //memory capacity
+        int mCapacity = 1000;                          //memory capacity
         private int numOutput;
 
         double maxQ;

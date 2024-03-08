@@ -82,7 +82,7 @@ public class LevelManager : MonoBehaviour
             notRandomIndex = 0;
     }
     
-    void Update()
+    void FixedUpdate()
     {
         CheckDeath();
         MoveObstacles();

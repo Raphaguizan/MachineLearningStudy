@@ -20,6 +20,9 @@ public class PlayerInput : MonoBehaviour
 
     void Update()
     {
+        if (!activeTrain)
+            return;
+
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             controller.Jump();
